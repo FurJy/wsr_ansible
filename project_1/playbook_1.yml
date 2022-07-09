@@ -1,0 +1,69 @@
+---
+- hosts: Centos
+  become: true
+  tasks:
+  - name: set timezone
+    timezone:
+     name: Europe/Moscow
+
+  - name: checking
+    yum:
+     update_cache: yes
+     name: chrony
+     state: latest
+     
+  - name: deploy chrony.conf
+    template:
+     src: /opt/ansible/project_1/ntp.conf
+     dest: /etc/chrony.conf
+     owner: root
+     group: root
+     mode: 0644
+
+  - name: restart chronyd
+    service:
+      name: chronyd
+      state: restarted
+      enabled: yes
+
+- hosts: Ubuntu
+  become: true
+  tasks:
+
+  - name: set timezone
+    timezone:
+     name: Europe/Moscow
+
+  - name: checking
+    apt:
+     update_cache: yes
+     name: chrony
+     state: latest
+
+  - name: deploy chrony.conf
+    template:
+     src: /opt/ansible/project_1/ntp.conf
+     dest: /etc/chrony.conf
+     owner: root
+     group: root
+     mode: 0644
+
+  - name: restart chronyd
+    service:
+      name: chronyd
+      state: restarted
+      enabled: yes
+
+
+
+
+
+
+
+
+
+
+
+
+
+

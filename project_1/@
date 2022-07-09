@@ -1,0 +1,61 @@
+---
+- hosts: Centos
+  tasks:
+  - name: set timezone
+    timezone:
+     name: Europe/Moscow
+  - name: checking
+    yum:
+     name: chrony
+     state: latest
+     update_cache: yes
+  - name: deploy chrony.conf
+    template:
+     src: .ntp.conf
+     dest: /etc/chrony.conf
+     owner: root
+     group: root
+     mode: 0644
+  - name: restart chronyd
+    service:
+      name: chronyd
+      state: restarted
+    become: yes
+    become_method: su
+
+- hosts: Ubuntu
+  tasks:
+  - name: set timezone
+    timezone:
+     name: Europe/Moscow
+  - name: checking
+    apt:
+     name: chrony
+     state: latest
+     update_cache: yes
+  - name: deploy chrony.conf
+    template:
+     src: .ntp.conf
+     dest: /etc/chrony.conf
+     owner: root
+     group: root
+     mode: 0644
+  - name: restart chronyd
+    service:
+      name: chronyd
+      state: restarted
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

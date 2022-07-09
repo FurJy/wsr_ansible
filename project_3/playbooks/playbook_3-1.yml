@@ -1,0 +1,82 @@
+- hosts: Ubuntu
+  become: yes
+  tasks: 
+   - name: install
+     apt:
+      update_cache: yes
+      name:
+       - docker
+       - docker-compose
+      state: latest
+   - name: usergroup
+     ansible.builtin.user:
+      name: user
+      group: docker
+
+- hosts: Centos
+  become: yes
+  tasks:
+   - name: addrepo
+     yum_repository:
+      name: docker
+      description: "docker repo"
+      baseurl: https://download.docker.com/linux/centos/8/x86_64/stable
+      gpgcheck: 1
+      gpgkey: https://download.docker.com/linux/centos/gpg
+      state: present
+   - name: install
+     yum:
+      update_cache: yes
+      name:
+       - docker-ce
+       - docker-compose-plugin
+       - epel-release
+      state: latest
+
+   - name: curl
+     get_url:
+      url: "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64"
+      dest: /usr/local/bin/docker-compose
+
+   - name: chmod
+     ansible.builtin.file:
+      path: /usr/local/bin/docker-compose
+      mode: +x 
+
+   - name: restart
+     ansible.builtin.service:
+      name: docker
+      state: restarted
+      enabled: yes
+
+   - name: usergroup
+     ansible.builtin.user:
+      name: user
+      group: docker
+
+   - name: stop
+     ansible.builtin.service: 
+      name: firewalld
+      state: stopped
+      enabled: no
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

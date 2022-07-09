@@ -1,0 +1,65 @@
+- hosts: Ubuntu
+  become: yes
+  tasks:
+   - name: mkdir
+     file:
+      path: /opt/docker/wordpress
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
+   
+   - name: copyfile
+     template:
+      src: docker-compose.yml
+      dest: /opt/docker/wordpress
+      owner: root
+      group: root
+      mode: 0644
+   
+   - name: compose
+     docker_compose:
+      project_src: /opt/docker/wordpress
+     register: output
+
+- hosts: Centos
+  become: yes
+  tasks:
+   - name: mkdir
+     file:
+      path: /opt/docker/wordpress
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
+   
+   - name: copyfile
+     template:
+      src: docker-compose.yml
+      dest: /opt/docker/wordpress
+      owner: root
+      group: root
+      mode: 0644
+   
+   - name: restart
+     ansible.builtin.service:
+      name: docker
+      state: restarted
+      enabled: yes
+
+   - name: symlink
+     shell: "ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose"
+
+   - name: shell
+     shell: "docker-compose -f /opt/docker/wordpress/docker-compose.yml up -d"
+
+
+
+
+
+
+
+
+
+
+

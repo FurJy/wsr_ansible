@@ -1,0 +1,65 @@
+- hosts: Ubuntu
+  become: yes
+  tasks:
+   - name: mkdir
+     file:
+      path: /opt/docker/nextcloud
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
+   
+   - name: copyfile
+     template:
+      src: compose/docker-compose.yml
+      dest: /opt/docker/nextcloud
+      owner: root
+      group: root
+      mode: 0644
+   
+   - name: compose
+     docker_compose:
+      project_src: /opt/docker/nextcloud
+     register: output
+
+- hosts: Centos
+  become: yes
+  tasks:
+   - name: mkdir
+     file:
+      path: /opt/docker/nextcloud
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
+   
+   - name: copyfile
+     template:
+      src: compose/docker-compose.yml
+      dest: /opt/docker/nextcloud
+      owner: root
+      group: root
+      mode: 0644
+   
+   - name: restart
+     ansible.builtin.service:
+      name: docker
+      state: restarted
+      enabled: yes
+
+#   - name: symlink
+#     shell: "ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose"
+
+   - name: shell
+     shell: "docker-compose -f /opt/docker/nextcloud/docker-compose.yml up -d"
+
+
+
+
+
+
+
+
+
+
+

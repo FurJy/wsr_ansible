@@ -1,0 +1,46 @@
+version: "3.3"
+
+services:
+  mariadb:
+    image: mariadb
+    volumes:
+     - /opt/mariadb:/var/lib/mysql
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: P@ssw0rd
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: Admin
+      MARIADB_PASSWORD: P@ssw0rd123
+
+  wordpress:
+    depends_on:
+      - mariadb
+    image: wordpress
+    volumes:
+      - /opt/wordpress:/var/www/html
+    ports:
+      - "8080:80"
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: mariadb:3306
+      WORDPRESS_DB_USER: Admin
+      WORDPRESS_DB_PASSWORD: P@ssw0rd123
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

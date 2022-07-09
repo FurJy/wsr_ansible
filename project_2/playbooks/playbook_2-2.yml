@@ -1,0 +1,67 @@
+- hosts: Ubuntu
+  become: yes
+  tasks:
+   - name: remove
+     file:
+      path: /var/www/html/index.html
+      state: absent
+   - name: gitclone
+     git:
+      repo: https://github.com/alexey-sergeev/php-mysql.git
+      dest: /var/www/html
+      clone: yes
+      update: yes
+   - name: dump
+     mysql_db:
+      name: animals
+      state: import
+      target: /var/www/html/animals.sql
+      login_user: root
+      login_password: P@ssw0rd
+   - name: user
+     mysql_user:
+      name: animals
+      password: 'animalspwd'
+      login_user: root
+      login_password: P@ssw0rd
+      state: present
+      priv: '*.*:ALL'
+
+- hosts: Centos
+  become: yes
+  tasks:
+   - name: remove
+     file:
+      path: /var/www/html/index.html
+      state: absent
+   - name: gitclone
+     git:
+      repo: https://github.com/alexey-sergeev/php-mysql.git
+      dest: /var/www/html
+      clone: yes
+      update: yes
+   - name: dump
+     mysql_db:
+      name: animals
+      state: import
+      target: /var/www/html/animals.sql
+      login_user: root
+      login_password: P@ssw0rd
+   - name: stop
+     service:
+      name: firewalld
+      state: stopped
+      enabled: no 
+   - name: user
+     mysql_user:
+      name: animals
+      password: 'animalspwd'
+      login_user: root
+      login_password: P@ssw0rd
+      state: present
+      priv: '*.*:ALL'
+   - name: restart
+     ansible.builtin.service:
+     name: httpd
+     state: restarted
+     enabled: yes

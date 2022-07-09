@@ -1,0 +1,64 @@
+- hosts: Ubuntu
+  become: yes
+  tasks:
+   - name: createdir
+     file:
+      path:
+       - "/opt/mariadb"
+       - "/opt/wordpress"
+      state: directory
+   - name: pullmdb
+     docker_image:
+      name: mariadb
+      source: pull
+   - name: pullwp
+     docker_image:
+      name: wordpress
+      source: pull
+   - name: mariadb
+     docker_container: 
+      name: mariadb
+      image: mariadb
+      restart_policy: always
+      volumes:
+       -  "/opt/mariadb:/var/lib/mysql"
+      env:
+        MARIADB_DATABASE: mysql
+        MARIADB_ROOT_PASSWORD: P@ssw0rd
+        MARIADB_USER: Admin
+        MARIADB_PASSWORD: P@ssw0rd123
+   - name: wordpress
+     docker_container: 
+      name: wordpress
+      image: wordpress
+      restart_policy: always
+      volumes:
+       - "/opt/wordpress:/var/www/html"
+      env:
+       WORDPRESS_DB_HOST: mariadb:3306
+       WORDPRESS_DB_USER: Admin
+       WORDPRESS_DB_PASSWORD: P@ssw0rd123
+       WORDPRESS_DB_NAME: mysql
+      ports:
+       - "8080:80"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
